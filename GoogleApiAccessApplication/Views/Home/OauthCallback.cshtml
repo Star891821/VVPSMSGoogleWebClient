@@ -1,13 +1,63 @@
-﻿@{
+﻿
+@model Task<GoogleApiAccessApplication.Controllers.LoginAuthResponse>
+@{
     ViewData["Title"] = "OauthCallback";
 }
 <div class="row">
     <div class="col-md-6 offset-md-3 mt-3">
         <div class="card">
-            <div class="card-header">@ViewBag.MailAddress</div>
-            <div class="card-header">@ViewBag.AccessToken</div>
-            <div class="card-header">@ViewBag.RefreshToken</div>
-            <div class="card-header">@ViewBag.IdToken</div>
+@*             <div class="card-header">@ViewBag.MailAddress</div> *@
+            @* <div class="card-header">@ViewBag.AccessToken</div>
+            <div class="card-header">@ViewBag.RefreshToken</div> *@
+            @* <div class="card-header">@ViewBag.responseBody</div> *@
+
+            @* <div>
+                <p>@Model.Result.jwtToken</p>
+                <!-- Other properties... -->
+            </div> *@
+            <table class="table table-striped table-bordered nowrap">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Key</th>
+                        <th scope="col">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row" style="width:150px;">Email</th>
+                        <td>@ViewBag.MailAddress</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">JWT Token</th>
+                        <td class= "text-wrap" style="word-break: break-word;">@Model.Result.jwtToken</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Expiry Date & Time</th>
+                        <td>@Model.Result.expiryDateTime</td>
+                    </tr>
+                    @* <tr>
+                        <th scope="row">User Id</th>
+                        <td>@Model.Result.userId</td>
+                    </tr> *@
+                    <tr>
+                        <th scope="row">User Name</th>
+                        <td>@Model.Result.userName</td>
+                    </tr>
+                 @*    <tr>
+                        <th scope="row">Sur Name</th>
+                        <td>@Model.Result.surName</td>
+                    </tr> *@
+                    <tr>
+                        <th scope="row">Phone</th>
+                        <td>@Model.Result.phone</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Role</th>
+                        <td>@Model.Result.role</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div class="card-header">@ViewBag.Error</div>
         </div>
     </div>
