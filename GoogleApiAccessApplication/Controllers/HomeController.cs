@@ -3,18 +3,18 @@ using GoogleApiAccessApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Xml;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GoogleApiAccessApplication.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private ServerResponse? oAuthDetails;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
+            GoogleApiHelper.SetServerResponseDetails(GetClientDetails().Result);
         }
 
         public IActionResult Index()
@@ -27,6 +27,17 @@ namespace GoogleApiAccessApplication.Controllers
         {
             string email = Request.Form["email"].FirstOrDefault();
             return RedirectPermanent(GoogleApiHelper.GetOauthUri(email));
+        }
+
+        public async Task<ServerResponse> GetClientDetails()
+        {
+            using (HttpClient cl = new HttpClient())
+            {
+                string url = "https://localhost:44347/api/SSO/GetGoogleSSODetailsByDomainName/";
+                string domainName = "Google";
+                oAuthDetails = JsonConvert.DeserializeObject<ServerResponse>(await cl.GetStringAsync(url + domainName));
+            }
+            return oAuthDetails;
         }
         public async Task<IActionResult> OauthCallback(string code, string error, string state)
         {
@@ -59,14 +70,14 @@ namespace GoogleApiAccessApplication.Controllers
                                 StringContent httpContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
                                 StringContent queryString = new StringContent(json);
                                 //Post http callas.
-                                HttpResponseMessage response = client.PostAsync("https://localhost:7188/api/ExternalLogin/Google/oAuthGoogleToken", httpContent).Result;
+                                HttpResponseMessage response = client.PostAsync("https://localhost:44347/api/ExternalLogin/Google/oAuthGoogleToken", httpContent).Result;
                                 //nesekmes atveju error..
                                 response.EnsureSuccessStatusCode();
                                 //responsas to string
                                 string responseBody = response.Content.ReadAsStringAsync().Result;
 
                                 ViewBag.responseBody = responseBody;
-                                var resp = response.Content.ReadFromJsonAsync<LoginAuthResponse>();                              
+                                var resp = response.Content.ReadFromJsonAsync<LoginAuthResponse>();
                                 ViewBag.LoginAuthResponse = resp;
                                 loginAuthResponseTask = resp;
                             }
@@ -78,7 +89,7 @@ namespace GoogleApiAccessApplication.Controllers
 
                         }
                     }
-                   
+
                 }
                 if (!string.IsNullOrEmpty(error))
                 {
@@ -124,5 +135,34 @@ namespace GoogleApiAccessApplication.Controllers
         public string? phone { get; set; }
 
         public string? role { get; set; }
+    }
+
+    public class ServerResponse
+    {
+        public int? Id { get; set; }
+
+        public string? DomainName { get; set; }
+
+        public string? DomainCode { get; set; }
+
+        public string? ClientId { get; set; }
+
+        public string? ClientSecretCode { get; set; }
+
+        public string? GrantType { get; set; }
+
+        public string? RedirectUrl { get; set; }
+
+        public string? TokenUrl { get; set; }
+
+        public string? GraphUrl { get; set; }
+
+        public bool? ActiveYn { get; set; }
+
+        public string? Oauthurl { get; set; }
+
+        public string? Scopes { get; set; }
+
+        public string? ApplicationName { get; set; }
     }
 }
